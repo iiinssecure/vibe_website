@@ -100,15 +100,14 @@
         }
 
         .falling-emoji {
-            position: absolute;
-            top: 10px;
+            position: fixed;
             font-size: 30px;
             animation: fall 4s infinite ease-in-out;
         }
 
         @keyframes fall {
             0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
-            100% { transform: translate(50px, 100vh) rotate(360deg); opacity: 0; }
+            100% { transform: translate(200px, 100vh) rotate(360deg); opacity: 0; }
         }
 
         .footer {
@@ -125,12 +124,36 @@
             color: white;
         }
 
-        #credits {
-            position: absolute;
+        /* Стили для отображения кредитов */
+        .credits {
+            position: fixed;
             top: 10px;
             right: 10px;
+            font-size: 18px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        /* Стили для уведомления */
+        .limit-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 0, 0, 0.8); /* Красный фон */
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
             font-size: 20px;
-            z-index: 9999;
+            display: none;
+        }
+
+        .limit-message p {
+            margin: 0;
+            font-size: 24px;
         }
     </style>
 </head>
@@ -147,18 +170,23 @@
         </div>
     </div>
 
-    <div id="credits">Credit: 0</div>
-
     <div class="popup" id="creditPopup">
         <p>恭喜！你获得了 +100 社会信用分！</p>
         <img src="credit.png" alt="Social Credit">
-        <button class="close" onclick="closePopup('creditPopup')">确认</button>
+        <button class="close" onclick="closePopup('creditPopup', angryBirdsAudio)">确认</button>
     </div>
 
     <div class="popup" id="wifePopup">
         <p>猫妻已获得！</p>
         <img src="catwife.jpg" alt="Cat Wife">
-        <button class="close" onclick="closePopup('wifePopup')">确认</button>
+        <button class="close" onclick="closePopup('wifePopup', danielAudio)">确认</button>
+    </div>
+
+    <div class="credits" id="credit-display">Credit: 0</div> <!-- Отображение кредитов -->
+
+    <!-- Окно уведомления -->
+    <div id="limit-message" class="limit-message" style="display: none;">
+        <p>您已达到信用限额👹</p>
     </div>
 
     <div class="footer">
@@ -166,75 +194,85 @@
     </div>
 
     <script>
-        let credits = 0;
         const creditButton = document.getElementById('creditButton');
         const wifeButton = document.getElementById('wifeButton');
         const creditPopup = document.getElementById('creditPopup');
         const wifePopup = document.getElementById('wifePopup');
-        const creditsDisplay = document.getElementById('credits');
-        let isPopupOpen = false;
+        const creditDisplay = document.getElementById('credit-display');
+        const limitMessage = document.getElementById('limit-message');
+
+        const angryBirdsAudio = new Audio('angry_birds.mp3');
+        const danielAudio = new Audio('daniel.mp3');
+        const trybaAudio = new Audio('tryba.mp3'); // Звук для лимита
+
+        let credits = 0; // Начальное количество кредитов
+        let creditPopupOpen = false; // Флаг для проверки, открыто ли окно с кредитами
 
         creditButton.addEventListener('click', () => {
-            if (isPopupOpen) return; // Prevent new popup if one is already open
+            if (creditPopupOpen || credits >= 666) return; // Если окно уже открыто или лимит достигнут, ничего не делать
 
-            if (credits < 600) {
-                credits += 100;
-            } else if (credits < 666) {
-                credits += 66;
+            if (credits === 600) {
+                credits += 66; // Добавляем 66 кредитов, чтобы получить 666
+            } else if (credits < 600) {
+                credits += 100; // Добавляем 100 кредитов
             }
 
-            updateCredits();
-            showPopup(creditPopup);
-            startEmojiRain();
+            creditDisplay.innerText = "Credit: " + credits; // Обновляем отображение кредитов
+
+            if (credits === 666) {
+                limitMessage.style.display = 'block'; // Показываем окно с лимитом
+                trybaAudio.play(); // Воспроизводим звук
+                setTimeout(() => {
+                    limitMessage.style.display = 'none'; // Скрываем окно через 5 секунд
+                }, 5000);
+            }
+
+            creditPopup.style.display = 'block';
+            angryBirdsAudio.play();
+            creditPopupOpen = true; // Устанавливаем флаг
+
+            startEmojiRain('💩');
         });
 
         wifeButton.addEventListener('click', () => {
-            if (isPopupOpen) return; // Prevent new popup if one is already open
-            showPopup(wifePopup);
+            if (creditPopupOpen) return; // Если окно с кредитами открыто, не показывать другое окно
+
+            wifePopup.style.display = 'block';
+            danielAudio.play();
+            startEmojiRain('🥰');
         });
 
-        function updateCredits() {
-            creditsDisplay.textContent = `Credit: ${credits}`;
-            if (credits >= 666) {
-                showLimitPopup();
-            }
-        }
-
-        function showPopup(popup) {
-            isPopupOpen = true;
-            popup.style.display = 'block';
-        }
-
-        function closePopup(popupId) {
+        function closePopup(popupId, audio) {
             document.getElementById(popupId).style.display = 'none';
-            isPopupOpen = false;
+            audio.pause();
+            audio.currentTime = 0;
+            stopEmojiRain();
+            creditPopupOpen = false; // Снимаем флаг
         }
 
-        function showLimitPopup() {
-            const limitPopup = document.createElement('div');
-            limitPopup.classList.add('popup');
-            limitPopup.innerHTML = `
-                <p>你已达到了最大信用限制！👹</p>
-                <button class="close" onclick="closeLimitPopup()">确认</button>
-            `;
-            document.body.appendChild(limitPopup);
+        let emojiRainInterval;
+
+        function startEmojiRain(emoji) {
+            emojiRainInterval = setInterval(() => {
+                createFallingEmoji(emoji);
+            }, 200);
         }
 
-        function closeLimitPopup() {
-            document.querySelector('.popup').remove();
-        }
-
-        function startEmojiRain() {
-            const fallingEmoji = document.createElement('div');
-            fallingEmoji.classList.add('falling-emoji');
-            fallingEmoji.textContent = '💩';
-            fallingEmoji.style.left = `${creditsDisplay.offsetLeft}px`;
-            fallingEmoji.style.animationDuration = '2s';
-            document.body.appendChild(fallingEmoji);
+        function createFallingEmoji(emoji) {
+            const emojiElement = document.createElement('div');
+            emojiElement.classList.add('falling-emoji');
+            emojiElement.innerText = emoji;
+            emojiElement.style.left = Math.random() * window.innerWidth + 'px';
+            emojiElement.style.animationDuration = Math.random() * 3 + 2 + 's'; // 2-5 секунд
+            document.body.appendChild(emojiElement);
 
             setTimeout(() => {
-                fallingEmoji.remove();
-            }, 2000);
+                emojiElement.remove();
+            }, 5000);
+        }
+
+        function stopEmojiRain() {
+            clearInterval(emojiRainInterval);
         }
     </script>
 </body>
