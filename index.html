@@ -119,16 +119,9 @@
             color: white;
         }
 
-        .author {
-            font-size: 14px;
-            color: white;
-        }
-
-        /* Стили для отображения кредитов */
-        .credits {
+        .credits, .wives {
             position: fixed;
             top: 10px;
-            right: 10px;
             font-size: 18px;
             color: white;
             background-color: rgba(0, 0, 0, 0.7);
@@ -136,7 +129,15 @@
             border-radius: 5px;
         }
 
-        /* Стили для уведомления */
+        .credits {
+            right: 10px;
+        }
+
+        .wives {
+            left: 10px;
+        }
+
+        /* Окно лимита */
         .limit-message {
             position: fixed;
             top: 50%;
@@ -170,109 +171,64 @@
         </div>
     </div>
 
-    <div class="popup" id="creditPopup">
-        <p>恭喜！你获得了 +100 社会信用分！</p>
-        <img src="credit.png" alt="Social Credit">
-        <button class="close" onclick="closePopup('creditPopup', angryBirdsAudio)">确认</button>
-    </div>
+    <div class="credits" id="credit-display">信用: 0</div> <!-- Счётчик кредитов -->
+    <div class="wives" id="wife-display">猫妻: 0</div> <!-- Счётчик кошко-жён -->
 
-    <div class="popup" id="wifePopup">
-        <p>猫妻已获得！</p>
-        <img src="catwife.jpg" alt="Cat Wife">
-        <button class="close" onclick="closePopup('wifePopup', danielAudio)">确认</button>
-    </div>
-
-    <div class="credits" id="credit-display">Credit: 0</div> <!-- Отображение кредитов -->
-
-    <!-- Окно уведомления -->
-    <div id="limit-message" class="limit-message" style="display: none;">
+    <div id="limit-message" class="limit-message">
         <p>您已达到信用限额👹</p>
     </div>
 
-    <div class="footer">
-        网站仅供娱乐 | 用爱制作 🌸
+    <div id="wife-limit-message" class="limit-message">
+        <p>您已达到猫妻限额！🥰</p>
     </div>
 
     <script>
         const creditButton = document.getElementById('creditButton');
         const wifeButton = document.getElementById('wifeButton');
-        const creditPopup = document.getElementById('creditPopup');
-        const wifePopup = document.getElementById('wifePopup');
         const creditDisplay = document.getElementById('credit-display');
+        const wifeDisplay = document.getElementById('wife-display');
         const limitMessage = document.getElementById('limit-message');
+        const wifeLimitMessage = document.getElementById('wife-limit-message');
 
-        const angryBirdsAudio = new Audio('angry_birds.mp3');
-        const danielAudio = new Audio('daniel.mp3');
-        const trybaAudio = new Audio('tryba.mp3'); // Звук для лимита
+        const trybaAudio = new Audio('tryba.mp3');
 
-        let credits = 0; // Начальное количество кредитов
-        let creditPopupOpen = false; // Флаг для проверки, открыто ли окно с кредитами
+        let credits = 0;
+        let wives = 0;
 
         creditButton.addEventListener('click', () => {
-            if (creditPopupOpen || credits >= 666) return; // Если окно уже открыто или лимит достигнут, ничего не делать
-
-            if (credits === 600) {
-                credits += 66; // Добавляем 66 кредитов, чтобы получить 666
-            } else if (credits < 600) {
-                credits += 100; // Добавляем 100 кредитов
+            if (credits >= 666) {
+                limitMessage.style.display = 'block';
+                trybaAudio.play();
+                setTimeout(() => limitMessage.style.display = 'none', 3000);
+                return;
             }
 
-            creditDisplay.innerText = "Credit: " + credits; // Обновляем отображение кредитов
-
-            if (credits === 666) {
-                limitMessage.style.display = 'block'; // Показываем окно с лимитом
-                trybaAudio.play(); // Воспроизводим звук
-                setTimeout(() => {
-                    limitMessage.style.display = 'none'; // Скрываем окно через 5 секунд
-                }, 5000);
-            }
-
-            creditPopup.style.display = 'block';
-            angryBirdsAudio.play();
-            creditPopupOpen = true; // Устанавливаем флаг
-
-            startEmojiRain('💩');
+            credits += credits === 600 ? 66 : 100; // Добавляем 66 при 600 кредитах
+            creditDisplay.innerText = `信用: ${credits}`;
+            createFallingEmoji('💩');
         });
 
         wifeButton.addEventListener('click', () => {
-            if (creditPopupOpen) return; // Если окно с кредитами открыто, не показывать другое окно
+            if (wives >= 1) {
+                wifeLimitMessage.style.display = 'block';
+                setTimeout(() => wifeLimitMessage.style.display = 'none', 3000);
+                return;
+            }
 
-            wifePopup.style.display = 'block';
-            danielAudio.play();
-            startEmojiRain('🥰');
+            wives++;
+            wifeDisplay.innerText = `猫妻: ${wives}`;
+            createFallingEmoji('❤️');
         });
-
-        function closePopup(popupId, audio) {
-            document.getElementById(popupId).style.display = 'none';
-            audio.pause();
-            audio.currentTime = 0;
-            stopEmojiRain();
-            creditPopupOpen = false; // Снимаем флаг
-        }
-
-        let emojiRainInterval;
-
-        function startEmojiRain(emoji) {
-            emojiRainInterval = setInterval(() => {
-                createFallingEmoji(emoji);
-            }, 200);
-        }
 
         function createFallingEmoji(emoji) {
             const emojiElement = document.createElement('div');
             emojiElement.classList.add('falling-emoji');
             emojiElement.innerText = emoji;
             emojiElement.style.left = Math.random() * window.innerWidth + 'px';
-            emojiElement.style.animationDuration = Math.random() * 3 + 2 + 's'; // 2-5 секунд
+            emojiElement.style.animationDuration = Math.random() * 2 + 2 + 's'; // 2-4 секунды
             document.body.appendChild(emojiElement);
 
-            setTimeout(() => {
-                emojiElement.remove();
-            }, 5000);
-        }
-
-        function stopEmojiRain() {
-            clearInterval(emojiRainInterval);
+            setTimeout(() => emojiElement.remove(), 5000);
         }
     </script>
 </body>
