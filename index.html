@@ -124,6 +124,38 @@
             font-size: 14px;
             color: white;
         }
+
+        /* Стили для отображения кредитов */
+        .credits {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            font-size: 18px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        /* Стили для уведомления */
+        .limit-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 20px;
+            display: none;
+        }
+
+        .limit-message p {
+            margin: 0;
+            font-size: 24px;
+        }
     </style>
 </head>
 <body>
@@ -151,6 +183,13 @@
         <button class="close" onclick="closePopup('wifePopup', danielAudio)">确认</button>
     </div>
 
+    <div class="credits" id="credit-display">Credit: 0</div> <!-- Отображение кредитов -->
+
+    <!-- Окно уведомления -->
+    <div id="limit-message" class="limit-message" style="display: none;">
+        <p>您已达到信用限额👹</p>
+    </div>
+
     <div class="footer">
         网站仅供娱乐 | 用爱制作 🌸
     </div>
@@ -160,11 +199,27 @@
         const wifeButton = document.getElementById('wifeButton');
         const creditPopup = document.getElementById('creditPopup');
         const wifePopup = document.getElementById('wifePopup');
+        const creditDisplay = document.getElementById('credit-display');
+        const limitMessage = document.getElementById('limit-message');
 
         const angryBirdsAudio = new Audio('angry_birds.mp3');
         const danielAudio = new Audio('daniel.mp3');
 
+        let credits = 0; // Начальное количество кредитов
+
         creditButton.addEventListener('click', () => {
+            if (credits < 666) {
+                credits += 100; // Добавляем 100 кредитов
+                creditDisplay.innerText = "Credit: " + credits; // Обновляем отображение кредитов
+            }
+
+            if (credits === 666) {
+                limitMessage.style.display = 'block'; // Показываем окно с лимитом
+                setTimeout(() => {
+                    limitMessage.style.display = 'none'; // Скрываем окно через 5 секунд
+                }, 5000);
+            }
+
             creditPopup.style.display = 'block';
             angryBirdsAudio.play();
             startEmojiRain('💩');
