@@ -72,7 +72,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             padding: 20px;
-            background: rgba(0, 0, 0, 0.8); /* Сделал окна темнее */
+            background: rgba(0, 0, 0, 0.9); /* Сделал ещё темнее фон */
             border-radius: 15px;
             text-align: center;
             z-index: 9999;
@@ -146,7 +146,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             padding: 20px;
-            background: rgba(0, 0, 0, 0.7); /* прозрачный фон */
+            background: rgba(0, 0, 0, 0.7); /* Прозрачный фон */
             border-radius: 15px;
             text-align: center;
             color: white;
@@ -160,16 +160,18 @@
 
         /* Лимитные окна */
         .credit-limit-popup {
-            background: rgba(255, 51, 51, 0.8); /* непрозрачный красный */
+            background: rgba(255, 51, 51, 0.8); /* Непрозрачный красный */
         }
 
         .wife-limit-popup {
-            background: rgba(255, 51, 51, 0.8); /* непрозрачный красный */
+            background: rgba(255, 51, 51, 0.8); /* Непрозрачный красный */
         }
 
-        /* Сделать текст жирнее */
+        /* Сделать текст для сообщений крупнее */
         .popup p {
-            font-weight: bold; /* Текст жирнее */
+            font-size: 24px; /* Увеличенный размер текста */
+            font-weight: bold; /* Жирный текст */
+            white-space: nowrap; /* Текст в одном ряду */
         }
 
     </style>
@@ -263,8 +265,6 @@
         function closePopup(popupId, audio) {
             document.getElementById(popupId).style.display = 'none';
             audio.pause();
-            audio.currentTime = 0;
-            stopEmojiRain();
         }
 
         function startEmojiRain(emoji) {
