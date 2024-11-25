@@ -120,22 +120,40 @@
             color: white;
         }
 
-        .counter-container {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-
         .counter {
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            padding: 10px;
-            font-size: 18px;
+            position: fixed;
+            top: 10px;
+            font-size: 24px;
+            color: white;
         }
 
-        .limit-popup {
-            background: red;
+        .credit-counter {
+            left: 10px;
         }
+
+        .wife-counter {
+            right: 10px;
+        }
+
+        .credit-limit-popup, .wife-limit-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background: #ff3333;
+            border-radius: 15px;
+            text-align: center;
+            color: white;
+            z-index: 10000;
+        }
+
+        .credit-limit-popup p, .wife-limit-popup p {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
     </style>
 </head>
 <body>
@@ -148,11 +166,6 @@
         <div style="margin-top: 20px;">
             <button class="button credit-button" id="creditButton">获取 +100 社会信用</button>
             <button class="button wife-button" id="wifeButton">获取猫妻</button>
-        </div>
-
-        <div class="counter-container">
-            <div class="counter" id="creditCounter">社会信用: 0</div>
-            <div class="counter" id="wifeCounter">猫妻: 0</div>
         </div>
     </div>
 
@@ -168,62 +181,62 @@
         <button class="close" onclick="closePopup('wifePopup', danielAudio)">确认</button>
     </div>
 
-    <div class="popup limit-popup" id="creditLimitPopup">
-        <p>你达到了信用限额！👹</p>
-        <button class="close" onclick="closePopup('creditLimitPopup', trybaAudio)">确认</button>
+    <div class="credit-limit-popup" id="creditLimitPopup">
+        <p>你已达到社会信用上限！👹</p>
     </div>
 
-    <div class="popup limit-popup" id="wifeLimitPopup">
-        <p>你已经有 1 猫妻，达到了限额 🥰</p>
-        <button class="close" onclick="closePopup('wifeLimitPopup', trybaAudio)">确认</button>
+    <div class="wife-limit-popup" id="wifeLimitPopup">
+        <p>你已经有猫妻了 🥰</p>
     </div>
 
     <div class="footer">
         网站仅供娱乐 | 用爱制作 🌸
     </div>
 
+    <div class="counter credit-counter">社会信用: 0</div>
+    <div class="counter wife-counter">猫妻: 0</div>
+
     <script>
         let creditCount = 0;
         let wifeCount = 0;
-        const creditLimit = 666;
-        const wifeLimit = 1;
-
+        let emojiRainInterval;
         const creditButton = document.getElementById('creditButton');
         const wifeButton = document.getElementById('wifeButton');
         const creditPopup = document.getElementById('creditPopup');
         const wifePopup = document.getElementById('wifePopup');
         const creditLimitPopup = document.getElementById('creditLimitPopup');
         const wifeLimitPopup = document.getElementById('wifeLimitPopup');
-        const creditCounter = document.getElementById('creditCounter');
-        const wifeCounter = document.getElementById('wifeCounter');
+        const creditCounter = document.querySelector('.credit-counter');
+        const wifeCounter = document.querySelector('.wife-counter');
 
         const angryBirdsAudio = new Audio('angry_birds.mp3');
         const danielAudio = new Audio('daniel.mp3');
         const trybaAudio = new Audio('tryba.mp3');
 
         creditButton.addEventListener('click', () => {
-            if (creditCount < creditLimit) {
-                creditCount += 100;
-                creditCounter.textContent = `社会信用: ${creditCount}`;
-                creditPopup.style.display = 'block';
-                angryBirdsAudio.play();
-                startEmojiRain('💩');
-                if (creditCount >= creditLimit) {
-                    showCreditLimitPopup();
-                }
+            if (creditCount >= 666) {
+                creditLimitPopup.style.display = 'block';
+                trybaAudio.play();
+                stopEmojiRain();
+                return;
             }
+            creditCount += creditCount >= 600 ? 66 : 100;
+            creditCounter.textContent = `社会信用: ${creditCount}`;
+            creditPopup.style.display = 'block';
+            angryBirdsAudio.play();
+            startEmojiRain('💩');
         });
 
         wifeButton.addEventListener('click', () => {
-            if (wifeCount < wifeLimit) {
-                wifeCount++;
-                wifeCounter.textContent = `猫妻: ${wifeCount}`;
-                wifePopup.style.display = 'block';
-                danielAudio.play();
-                startEmojiRain('🥰');
-            } else {
-                showWifeLimitPopup();
+            if (wifeCount >= 1) {
+                wifeLimitPopup.style.display = 'block';
+                return;
             }
+            wifeCount += 1;
+            wifeCounter.textContent = `猫妻: ${wifeCount}`;
+            wifePopup.style.display = 'block';
+            danielAudio.play();
+            startEmojiRain('🥰');
         });
 
         function closePopup(popupId, audio) {
@@ -233,19 +246,6 @@
             stopEmojiRain();
         }
 
-        function showCreditLimitPopup() {
-            creditLimitPopup.style.display = 'block';
-            trybaAudio.play();
-            stopEmojiRain();
-        }
-
-        function showWifeLimitPopup() {
-            wifeLimitPopup.style.display = 'block';
-            trybaAudio.play();
-        }
-
-        let emojiRainInterval;
-
         function startEmojiRain(emoji) {
             emojiRainInterval = setInterval(() => {
                 const fallingEmoji = document.createElement('div');
@@ -253,16 +253,18 @@
                 fallingEmoji.textContent = emoji;
                 fallingEmoji.style.left = Math.random() * 100 + 'vw';
                 fallingEmoji.style.animationDuration = Math.random() * 2 + 2 + 's';
+                fallingEmoji.style.transform = `rotate(${Math.random() * 360}deg)`;
                 document.body.appendChild(fallingEmoji);
 
                 setTimeout(() => {
                     fallingEmoji.remove();
                 }, 4000);
-            }, 100);
+            }, 30);
         }
 
         function stopEmojiRain() {
             clearInterval(emojiRainInterval);
+            document.querySelectorAll('.falling-emoji').forEach(emoji => emoji.remove());
         }
     </script>
 </body>
