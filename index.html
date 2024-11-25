@@ -145,7 +145,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             padding: 20px;
-            background: rgba(255, 51, 51, 1);
+            background: rgba(255, 51, 51, 0.8);
             border-radius: 15px;
             text-align: center;
             color: white;
@@ -157,8 +157,14 @@
             font-weight: bold;
         }
 
+        /* Прозрачный фон для лимитов */
+        .credit-limit-popup, .wife-limit-popup {
+            background: rgba(0, 0, 0, 0.8); /* прозрачный фон */
+        }
+
+        /* Непрозрачный фон для сообщений */
         .credit-popup, .wife-popup {
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(255, 51, 51, 1); /* непрозрачный фон */
         }
 
     </style>
@@ -261,11 +267,8 @@
                 const fallingEmoji = document.createElement('div');
                 fallingEmoji.classList.add('falling-emoji');
                 fallingEmoji.textContent = emoji;
-                fallingEmoji.style.left = Math.random() * 100 + 'vw';
-                fallingEmoji.style.animationDuration = Math.random() * 2 + 2 + 's';
-                fallingEmoji.style.transform = `rotate(${Math.random() * 360}deg)`;
+                fallingEmoji.style.left = `${Math.random() * window.innerWidth}px`;
                 document.body.appendChild(fallingEmoji);
-
                 setTimeout(() => fallingEmoji.remove(), 4000);
             }, 200);
         }
