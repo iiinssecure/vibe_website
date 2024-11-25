@@ -145,7 +145,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             padding: 20px;
-            background: rgba(255, 51, 51, 0.8);
+            background: rgba(255, 51, 51, 1);
             border-radius: 15px;
             text-align: center;
             color: white;
@@ -155,6 +155,10 @@
         .credit-limit-popup p, .wife-limit-popup p {
             font-size: 20px;
             font-weight: bold;
+        }
+
+        .credit-popup, .wife-popup {
+            background: rgba(0, 0, 0, 0.8);
         }
 
     </style>
@@ -172,13 +176,13 @@
         </div>
     </div>
 
-    <div class="popup" id="creditPopup">
+    <div class="popup credit-popup" id="creditPopup">
         <p>恭喜！你获得了 +100 社会信用分！</p>
         <img src="credit.png" alt="Social Credit">
         <button class="close" onclick="closePopup('creditPopup', angryBirdsAudio)">确认</button>
     </div>
 
-    <div class="popup" id="wifePopup">
+    <div class="popup wife-popup" id="wifePopup">
         <p>猫妻已获得！</p>
         <img src="catwife.jpg" alt="Cat Wife">
         <button class="close" onclick="closePopup('wifePopup', danielAudio)">确认</button>
@@ -262,10 +266,8 @@
                 fallingEmoji.style.transform = `rotate(${Math.random() * 360}deg)`;
                 document.body.appendChild(fallingEmoji);
 
-                setTimeout(() => {
-                    fallingEmoji.remove();
-                }, 4000);
-            }, 30);
+                setTimeout(() => fallingEmoji.remove(), 4000);
+            }, 200);
         }
 
         function stopEmojiRain() {
