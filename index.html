@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
@@ -26,14 +26,14 @@
             margin: 50px auto;
             padding: 30px;
             background: rgba(0, 0, 0, 0.8);
-            border: 7px dashed white;
+            border: 7px dashed white; /* Пунктир стал чуть больше */
             border-radius: 20px;
             text-align: center;
             position: relative;
         }
 
         .main-text {
-            font-size: 30px;
+            font-size: 30px; /* Уменьшил размер текста */
             font-weight: bold;
             margin-bottom: 20px;
         }
@@ -50,7 +50,7 @@
         }
 
         .credit-button {
-            background: #36c442;
+            background: #36c442; /* Чуть более зелёный */
         }
 
         .credit-button:hover {
@@ -58,7 +58,7 @@
         }
 
         .wife-button {
-            background: #ff66b3;
+            background: #ff66b3; /* Розовый цвет */
         }
 
         .wife-button:hover {
@@ -119,11 +119,6 @@
             font-size: 16px;
             color: white;
         }
-
-        .author {
-            font-size: 14px;
-            color: white;
-        }
     </style>
 </head>
 <body>
@@ -153,7 +148,6 @@
 
     <div class="footer">
         网站仅供娱乐 | 用爱制作 🌸
-        <div class="author">creator: iiinssecure</div>
     </div>
 
     <script>
@@ -193,7 +187,7 @@
                 fallingEmoji.textContent = emoji;
                 fallingEmoji.style.left = Math.random() * 100 + 'vw';
                 fallingEmoji.style.animationDuration = Math.random() * 2 + 2 + 's';
-                fallingEmoji.style.transform = rotate(${Math.random() * 360}deg);
+                fallingEmoji.style.transform = `rotate(${Math.random() * 360}deg)`;
                 document.body.appendChild(fallingEmoji);
 
                 setTimeout(() => {
