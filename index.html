@@ -131,19 +131,20 @@
         }
 
         .count-box {
-            position: fixed;
-            top: 10%;
-            left: 5%;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            border-radius: 10px;
             font-size: 24px;
-            z-index: 999;
+            display: inline-block;
+            margin: 10px;
         }
 
-        .wife-count-box {
-            position: fixed;
-            top: 10%;
-            right: 5%;
-            font-size: 24px;
-            z-index: 999;
+        .limit-popup {
+            background: #cc0000;
+        }
+
+        .wife-limit-popup {
+            background: #ff3333;
         }
     </style>
 </head>
@@ -160,10 +161,10 @@
         </div>
         <div class="counter">
             <div class="count-box">
-                社会信用: <span id="creditCounter">0</span>/666
+                猫妻: <span id="wifeCounter">0</span>
             </div>
-            <div class="wife-count-box">
-                猫妻: <span id="wifeCounter">0</span>/1
+            <div class="count-box">
+                社会信用: <span id="creditCounter">0</span>
             </div>
         </div>
     </div>
@@ -180,12 +181,12 @@
         <button class="close" onclick="closePopup('wifePopup', danielAudio)">确认</button>
     </div>
 
-    <div class="popup" id="creditLimitPopup">
+    <div class="popup limit-popup" id="creditLimitPopup">
         <p>你已达到信用积分上限！👹</p>
         <button class="close" onclick="closePopup('creditLimitPopup', trybaAudio)">确认</button>
     </div>
 
-    <div class="popup" id="wifeLimitPopup">
+    <div class="popup wife-limit-popup" id="wifeLimitPopup">
         <p>你已经有猫妻了，达到了上限 🥰</p>
         <button class="close" onclick="closePopup('wifeLimitPopup', trybaAudio)">确认</button>
     </div>
@@ -211,26 +212,26 @@
         let wifeCount = 0;
 
         creditButton.addEventListener('click', () => {
-            if (creditCount < 666) {
+            if (creditCount < 666 && !isPopupOpen()) {
                 creditCount += 100;
                 creditCounter.textContent = creditCount;
                 creditPopup.style.display = 'block';
                 angryBirdsAudio.play();
                 startEmojiRain('💩');
-            } else {
+            } else if (creditCount >= 666) {
                 creditLimitPopup.style.display = 'block';
                 trybaAudio.play();
             }
         });
 
         wifeButton.addEventListener('click', () => {
-            if (wifeCount < 1) {
+            if (wifeCount < 1 && !isPopupOpen()) {
                 wifeCount += 1;
                 wifeCounter.textContent = wifeCount;
                 wifePopup.style.display = 'block';
                 danielAudio.play();
                 startEmojiRain('🥰');
-            } else {
+            } else if (wifeCount >= 1) {
                 wifeLimitPopup.style.display = 'block';
                 trybaAudio.play();
             }
@@ -243,6 +244,10 @@
             stopEmojiRain();
         }
 
+        function isPopupOpen() {
+            return creditPopup.style.display !== 'none' || wifePopup.style.display !== 'none' || creditLimitPopup.style.display !== 'none' || wifeLimitPopup.style.display !== 'none';
+        }
+
         let emojiRainInterval;
 
         function startEmojiRain(emoji) {
@@ -252,19 +257,15 @@
                 fallingEmoji.classList.add('falling-emoji');
                 fallingEmoji.textContent = emoji;
                 fallingEmoji.style.left = Math.random() * 100 + 'vw';
-                fallingEmoji.style.animationDuration = Math.random() * 2 + 2 + 's';
-                fallingEmoji.style.transform = `rotate(${Math.random() * 360}deg)`;
                 document.body.appendChild(fallingEmoji);
-
                 setTimeout(() => {
                     fallingEmoji.remove();
                 }, 4000);
-            }, 30);
+            }, 200);
         }
 
         function stopEmojiRain() {
             clearInterval(emojiRainInterval);
-            document.querySelectorAll('.falling-emoji').forEach(emoji => emoji.remove());
         }
     </script>
 </body>
