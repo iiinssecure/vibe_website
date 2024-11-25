@@ -134,6 +134,8 @@
             padding: 10px 20px;
             border-radius: 10px;
             border: 2px solid white;
+            max-width: calc(50% - 40px);
+            box-sizing: border-box;
         }
     </style>
 </head>
@@ -201,12 +203,18 @@
         creditButton.addEventListener('click', () => {
             if (popupOpen) return;
 
+            if (credits >= 600) {
+                credits += 66;
+            } else if (credits < 600) {
+                credits += 100;
+            }
+
             if (credits >= CREDIT_LIMIT) {
+                credits = CREDIT_LIMIT;
                 showLimitPopup("你达到了信用上限!! 👹");
                 return;
             }
 
-            credits += 100;
             creditCounter.textContent = `社会信用: ${credits}`;
             showPopup(creditPopup, angryBirdsAudio);
             startEmojiRain('💩');
@@ -269,7 +277,6 @@
 
         function stopEmojiRain() {
             clearInterval(emojiRainInterval);
-            document.querySelectorAll('.falling-emoji').forEach(emoji => emoji.remove());
         }
     </script>
 </body>
