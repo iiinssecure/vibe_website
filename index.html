@@ -21,33 +21,6 @@
             100% { background-position: 0% 50%; }
         }
 
-        .counters {
-            position: fixed;
-            top: 20px;
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            padding: 0 15px;
-            font-size: 18px;
-            pointer-events: none; /* предотвращает случайное нажатие */
-        }
-
-        .counters span {
-            background: rgba(0, 0, 0, 0.7);
-            padding: 10px 20px;
-            border-radius: 10px;
-            border: 2px solid white;
-            pointer-events: auto; /* активирует клики только для текста */
-        }
-
-        .left-counter {
-            align-self: flex-start;
-        }
-
-        .right-counter {
-            align-self: flex-end;
-        }
-
         .container {
             max-width: 700px;
             margin: 50px auto;
@@ -73,6 +46,7 @@
             font-size: 18px;
             cursor: pointer;
             margin: 10px;
+            display: inline-block;
         }
 
         .credit-button {
@@ -91,15 +65,89 @@
             background: #ff85c6;
         }
 
-        /* Остальной код и стили остаются без изменений */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background: #1e1e1e;
+            border-radius: 15px;
+            text-align: center;
+            z-index: 9999;
+            width: 300px;
+            color: white;
+        }
+
+        .popup img {
+            max-width: 80%;
+            border-radius: 10px;
+        }
+
+        .popup .close {
+            background: #ff3333;
+            border: none;
+            padding: 10px 20px;
+            color: white;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .popup .close:hover {
+            background: #ff6666;
+        }
+
+        .falling-emoji {
+            position: fixed;
+            top: -50px;
+            font-size: 30px;
+            animation: fall 4s infinite ease-in-out;
+        }
+
+        @keyframes fall {
+            0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+            100% { transform: translate(200px, 100vh) rotate(360deg); opacity: 0; }
+        }
+
+        .footer {
+            text-align: center;
+            position: fixed;
+            bottom: 10px;
+            width: 100%;
+            font-size: 16px;
+            color: white;
+        }
+
+        .counter {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .limit-reached {
+            color: red;
+        }
+
+        .count-box {
+            position: fixed;
+            top: 10%;
+            left: 5%;
+            font-size: 24px;
+            z-index: 999;
+        }
+
+        .wife-count-box {
+            position: fixed;
+            top: 10%;
+            right: 5%;
+            font-size: 24px;
+            z-index: 999;
+        }
     </style>
 </head>
 <body>
-    <div class="counters">
-        <span class="left-counter" id="creditCounter">社会信用: 0</span>
-        <span class="right-counter" id="wifeCounter">猫妻: 0</span>
-    </div>
-
     <div class="container">
         <p class="main-text">查看唱歌的狗视频并获得 +100 社会信用 和 猫妻！</p>
         <video width="350" controls>
@@ -110,15 +158,114 @@
             <button class="button credit-button" id="creditButton">获取 +100 社会信用</button>
             <button class="button wife-button" id="wifeButton">获取猫妻</button>
         </div>
+        <div class="counter">
+            <div class="count-box">
+                社会信用: <span id="creditCounter">0</span>/666
+            </div>
+            <div class="wife-count-box">
+                猫妻: <span id="wifeCounter">0</span>/1
+            </div>
+        </div>
     </div>
 
-    <!-- Остальная структура и скрипты остаются без изменений -->
+    <div class="popup" id="creditPopup">
+        <p>恭喜！你获得了 +100 社会信用分！</p>
+        <img src="credit.png" alt="Social Credit">
+        <button class="close" onclick="closePopup('creditPopup', angryBirdsAudio)">确认</button>
+    </div>
+
+    <div class="popup" id="wifePopup">
+        <p>猫妻已获得！</p>
+        <img src="catwife.jpg" alt="Cat Wife">
+        <button class="close" onclick="closePopup('wifePopup', danielAudio)">确认</button>
+    </div>
+
+    <div class="popup" id="creditLimitPopup">
+        <p>你已达到信用积分上限！👹</p>
+        <button class="close" onclick="closePopup('creditLimitPopup', trybaAudio)">确认</button>
+    </div>
+
+    <div class="popup" id="wifeLimitPopup">
+        <p>你已经有猫妻了，达到了上限 🥰</p>
+        <button class="close" onclick="closePopup('wifeLimitPopup', trybaAudio)">确认</button>
+    </div>
+
+    <div class="footer">
+        网站仅供娱乐 | 用爱制作 🌸
+    </div>
+
     <script>
-        // Скрипт управления логикой остаётся тем же.
+        const creditButton = document.getElementById('creditButton');
+        const wifeButton = document.getElementById('wifeButton');
+        const creditPopup = document.getElementById('creditPopup');
+        const wifePopup = document.getElementById('wifePopup');
+        const creditLimitPopup = document.getElementById('creditLimitPopup');
+        const wifeLimitPopup = document.getElementById('wifeLimitPopup');
         const creditCounter = document.getElementById('creditCounter');
         const wifeCounter = document.getElementById('wifeCounter');
+        const angryBirdsAudio = new Audio('angry_birds.mp3');
+        const danielAudio = new Audio('daniel.mp3');
+        const trybaAudio = new Audio('tryba.mp3');
 
-        // Основная логика (для примера) из вашего кода остаётся.
+        let creditCount = 0;
+        let wifeCount = 0;
+
+        creditButton.addEventListener('click', () => {
+            if (creditCount < 666) {
+                creditCount += 100;
+                creditCounter.textContent = creditCount;
+                creditPopup.style.display = 'block';
+                angryBirdsAudio.play();
+                startEmojiRain('💩');
+            } else {
+                creditLimitPopup.style.display = 'block';
+                trybaAudio.play();
+            }
+        });
+
+        wifeButton.addEventListener('click', () => {
+            if (wifeCount < 1) {
+                wifeCount += 1;
+                wifeCounter.textContent = wifeCount;
+                wifePopup.style.display = 'block';
+                danielAudio.play();
+                startEmojiRain('🥰');
+            } else {
+                wifeLimitPopup.style.display = 'block';
+                trybaAudio.play();
+            }
+        });
+
+        function closePopup(popupId, audio) {
+            document.getElementById(popupId).style.display = 'none';
+            audio.pause();
+            audio.currentTime = 0;
+            stopEmojiRain();
+        }
+
+        let emojiRainInterval;
+
+        function startEmojiRain(emoji) {
+            if (creditCount >= 666) return;
+            emojiRainInterval = setInterval(() => {
+                const fallingEmoji = document.createElement('div');
+                fallingEmoji.classList.add('falling-emoji');
+                fallingEmoji.textContent = emoji;
+                fallingEmoji.style.left = Math.random() * 100 + 'vw';
+                fallingEmoji.style.animationDuration = Math.random() * 2 + 2 + 's';
+                fallingEmoji.style.transform = `rotate(${Math.random() * 360}deg)`;
+                document.body.appendChild(fallingEmoji);
+
+                setTimeout(() => {
+                    fallingEmoji.remove();
+                }, 4000);
+            }, 30);
+        }
+
+        function stopEmojiRain() {
+            clearInterval(emojiRainInterval);
+            document.querySelectorAll('.falling-emoji').forEach(emoji => emoji.remove());
+        }
     </script>
 </body>
 </html>
