@@ -26,14 +26,14 @@
             margin: 50px auto;
             padding: 30px;
             background: rgba(0, 0, 0, 0.8);
-            border: 7px dashed white; /* Пунктир стал чуть больше */
+            border: 7px dashed white;
             border-radius: 20px;
             text-align: center;
             position: relative;
         }
 
         .main-text {
-            font-size: 30px; /* Уменьшил размер текста */
+            font-size: 30px;
             font-weight: bold;
             margin-bottom: 20px;
         }
@@ -46,11 +46,10 @@
             font-size: 18px;
             cursor: pointer;
             margin: 10px;
-            display: inline-block;
         }
 
         .credit-button {
-            background: #36c442; /* Чуть более зелёный */
+            background: #36c442;
         }
 
         .credit-button:hover {
@@ -58,7 +57,7 @@
         }
 
         .wife-button {
-            background: #ff66b3; /* Розовый цвет */
+            background: #ff66b3;
         }
 
         .wife-button:hover {
@@ -119,9 +118,31 @@
             font-size: 16px;
             color: white;
         }
+
+        .counters {
+            position: fixed;
+            top: 20px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+            font-size: 18px;
+        }
+
+        .counters span {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 2px solid white;
+        }
     </style>
 </head>
 <body>
+    <div class="counters">
+        <span id="wifeCounter">猫妻: 0</span>
+        <span id="creditCounter">社会信用: 0</span>
+    </div>
+
     <div class="container">
         <p class="main-text">查看唱歌的狗视频并获得 +100 社会信用 和 猫妻！</p>
         <video width="350" controls>
@@ -146,6 +167,11 @@
         <button class="close" onclick="closePopup('wifePopup', danielAudio)">确认</button>
     </div>
 
+    <div class="popup" id="limitPopup">
+        <p></p>
+        <button class="close" onclick="closePopup('limitPopup', trybaAudio)">确认</button>
+    </div>
+
     <div class="footer">
         网站仅供娱乐 | 用爱制作 🌸
     </div>
@@ -155,27 +181,72 @@
         const wifeButton = document.getElementById('wifeButton');
         const creditPopup = document.getElementById('creditPopup');
         const wifePopup = document.getElementById('wifePopup');
+        const limitPopup = document.getElementById('limitPopup');
+
+        const creditCounter = document.getElementById('creditCounter');
+        const wifeCounter = document.getElementById('wifeCounter');
 
         const angryBirdsAudio = new Audio('angry_birds.mp3');
         const danielAudio = new Audio('daniel.mp3');
+        const trybaAudio = new Audio('tryba.mp3');
+
+        let credits = 0;
+        let wives = 0;
+
+        const CREDIT_LIMIT = 666;
+        const WIFE_LIMIT = 1;
+
+        let popupOpen = false;
 
         creditButton.addEventListener('click', () => {
-            creditPopup.style.display = 'block';
-            angryBirdsAudio.play();
+            if (popupOpen) return;
+
+            if (credits >= CREDIT_LIMIT) {
+                showLimitPopup("你达到了信用上限!! 👹");
+                return;
+            }
+
+            credits += 100;
+            creditCounter.textContent = `社会信用: ${credits}`;
+            showPopup(creditPopup, angryBirdsAudio);
             startEmojiRain('💩');
         });
 
         wifeButton.addEventListener('click', () => {
-            wifePopup.style.display = 'block';
-            danielAudio.play();
+            if (popupOpen) return;
+
+            if (wives >= WIFE_LIMIT) {
+                showLimitPopup("你已经有一个猫妻 🥰");
+                return;
+            }
+
+            wives++;
+            wifeCounter.textContent = `猫妻: ${wives}`;
+            showPopup(wifePopup, danielAudio);
             startEmojiRain('🥰');
         });
 
+        function showPopup(popup, audio) {
+            popup.style.display = 'block';
+            popupOpen = true;
+            audio.play();
+        }
+
         function closePopup(popupId, audio) {
             document.getElementById(popupId).style.display = 'none';
+            popupOpen = false;
             audio.pause();
             audio.currentTime = 0;
             stopEmojiRain();
+        }
+
+        function showLimitPopup(message) {
+            const messageElement = limitPopup.querySelector('p');
+            messageElement.textContent = message;
+            messageElement.style.color = credits >= CREDIT_LIMIT ? 'red' : '#ff85c6';
+            limitPopup.style.display = 'block';
+            popupOpen = true;
+            trybaAudio.play();
         }
 
         let emojiRainInterval;
