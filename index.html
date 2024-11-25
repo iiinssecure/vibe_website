@@ -120,31 +120,21 @@
             color: white;
         }
 
-        .counter {
-            font-size: 24px;
-            font-weight: bold;
+        .counter-container {
+            display: flex;
+            justify-content: space-between;
             margin-top: 20px;
         }
 
-        .limit-reached {
-            color: red;
-        }
-
-        .count-box {
-            background: rgba(0, 0, 0, 0.8);
-            padding: 10px;
+        .counter {
+            background: rgba(255, 255, 255, 0.2);
             border-radius: 10px;
-            font-size: 24px;
-            display: inline-block;
-            margin: 10px;
+            padding: 10px;
+            font-size: 18px;
         }
 
         .limit-popup {
-            background: #cc0000;
-        }
-
-        .wife-limit-popup {
-            background: #ff3333;
+            background: red;
         }
     </style>
 </head>
@@ -159,13 +149,10 @@
             <button class="button credit-button" id="creditButton">获取 +100 社会信用</button>
             <button class="button wife-button" id="wifeButton">获取猫妻</button>
         </div>
-        <div class="counter">
-            <div class="count-box">
-                猫妻: <span id="wifeCounter">0</span>
-            </div>
-            <div class="count-box">
-                社会信用: <span id="creditCounter">0</span>
-            </div>
+
+        <div class="counter-container">
+            <div class="counter" id="creditCounter">社会信用: 0</div>
+            <div class="counter" id="wifeCounter">猫妻: 0</div>
         </div>
     </div>
 
@@ -182,12 +169,12 @@
     </div>
 
     <div class="popup limit-popup" id="creditLimitPopup">
-        <p>你已达到信用积分上限！👹</p>
+        <p>你达到了信用限额！👹</p>
         <button class="close" onclick="closePopup('creditLimitPopup', trybaAudio)">确认</button>
     </div>
 
-    <div class="popup wife-limit-popup" id="wifeLimitPopup">
-        <p>你已经有猫妻了，达到了上限 🥰</p>
+    <div class="popup limit-popup" id="wifeLimitPopup">
+        <p>你已经有 1 猫妻，达到了限额 🥰</p>
         <button class="close" onclick="closePopup('wifeLimitPopup', trybaAudio)">确认</button>
     </div>
 
@@ -196,6 +183,11 @@
     </div>
 
     <script>
+        let creditCount = 0;
+        let wifeCount = 0;
+        const creditLimit = 666;
+        const wifeLimit = 1;
+
         const creditButton = document.getElementById('creditButton');
         const wifeButton = document.getElementById('wifeButton');
         const creditPopup = document.getElementById('creditPopup');
@@ -204,36 +196,33 @@
         const wifeLimitPopup = document.getElementById('wifeLimitPopup');
         const creditCounter = document.getElementById('creditCounter');
         const wifeCounter = document.getElementById('wifeCounter');
+
         const angryBirdsAudio = new Audio('angry_birds.mp3');
         const danielAudio = new Audio('daniel.mp3');
         const trybaAudio = new Audio('tryba.mp3');
 
-        let creditCount = 0;
-        let wifeCount = 0;
-
         creditButton.addEventListener('click', () => {
-            if (creditCount < 666 && !isPopupOpen()) {
+            if (creditCount < creditLimit) {
                 creditCount += 100;
-                creditCounter.textContent = creditCount;
+                creditCounter.textContent = `社会信用: ${creditCount}`;
                 creditPopup.style.display = 'block';
                 angryBirdsAudio.play();
                 startEmojiRain('💩');
-            } else if (creditCount >= 666) {
-                creditLimitPopup.style.display = 'block';
-                trybaAudio.play();
+                if (creditCount >= creditLimit) {
+                    showCreditLimitPopup();
+                }
             }
         });
 
         wifeButton.addEventListener('click', () => {
-            if (wifeCount < 1 && !isPopupOpen()) {
-                wifeCount += 1;
-                wifeCounter.textContent = wifeCount;
+            if (wifeCount < wifeLimit) {
+                wifeCount++;
+                wifeCounter.textContent = `猫妻: ${wifeCount}`;
                 wifePopup.style.display = 'block';
                 danielAudio.play();
                 startEmojiRain('🥰');
-            } else if (wifeCount >= 1) {
-                wifeLimitPopup.style.display = 'block';
-                trybaAudio.play();
+            } else {
+                showWifeLimitPopup();
             }
         });
 
@@ -244,24 +233,32 @@
             stopEmojiRain();
         }
 
-        function isPopupOpen() {
-            return creditPopup.style.display !== 'none' || wifePopup.style.display !== 'none' || creditLimitPopup.style.display !== 'none' || wifeLimitPopup.style.display !== 'none';
+        function showCreditLimitPopup() {
+            creditLimitPopup.style.display = 'block';
+            trybaAudio.play();
+            stopEmojiRain();
+        }
+
+        function showWifeLimitPopup() {
+            wifeLimitPopup.style.display = 'block';
+            trybaAudio.play();
         }
 
         let emojiRainInterval;
 
         function startEmojiRain(emoji) {
-            if (creditCount >= 666) return;
             emojiRainInterval = setInterval(() => {
                 const fallingEmoji = document.createElement('div');
                 fallingEmoji.classList.add('falling-emoji');
                 fallingEmoji.textContent = emoji;
                 fallingEmoji.style.left = Math.random() * 100 + 'vw';
+                fallingEmoji.style.animationDuration = Math.random() * 2 + 2 + 's';
                 document.body.appendChild(fallingEmoji);
+
                 setTimeout(() => {
                     fallingEmoji.remove();
                 }, 4000);
-            }, 200);
+            }, 100);
         }
 
         function stopEmojiRain() {
